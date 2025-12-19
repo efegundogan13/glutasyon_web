@@ -1,0 +1,83 @@
+{
+  "expo": {
+    "name": "Glutasyon",
+    "slug": "glutasyon-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon-1024.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/icon-1024.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.glutasyon.mobile",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Glutasyon, yakınınızdaki glütensiz restoranları göstermek için konumunuzu kullanır.",
+        "NSCameraUsageDescription": "Tarif ve restoran fotoğrafları eklemek için kameraya erişim gereklidir.",
+        "NSPhotoLibraryUsageDescription": "Galerinizden fotoğraf seçmek için erişim gereklidir."
+      },
+      "config": {
+        "googleMapsApiKey": "YOUR_IOS_API_KEY"
+      }
+    },
+    "android": {
+      "package": "com.glutasyon.mobile",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_API_KEY"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/icon-512.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Glutasyon, yakınınızdaki glütensiz restoranları göstermek için konumunuzu kullanır."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Tarif ve restoran fotoğrafları eklemek için galerinize erişim gereklidir.",
+          "cameraPermission": "Fotoğraf çekmek için kamera erişimi gereklidir."
+        }
+      ],
+      "expo-mail-composer"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    },
+    "owner": "your-expo-username",
+    "privacy": "public",
+    "description": "Glütensiz yaşam için kapsamlı platform. Glütensiz restoranları keşfedin, tarifleri paylaşın, kampanyaları takip edin.",
+    "primaryColor": "#4CAF50",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    }
+  }
+}
