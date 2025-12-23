@@ -39,6 +39,7 @@ const RestaurantManagementScreen = ({ route, navigation }) => {
   const [newLogo, setNewLogo] = useState(null);
   const [newMenuPdf, setNewMenuPdf] = useState(null);
   const [loadingCoordinates, setLoadingCoordinates] = useState(false);
+  const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
     loadRestaurantData();
@@ -51,6 +52,7 @@ const RestaurantManagementScreen = ({ route, navigation }) => {
       
       setRestaurant(restaurantData.restaurant);
       setProducts(productsData.products || []);
+      setCertificates(restaurantData.restaurant.certificates || []);
       
       setFormData({
         name: restaurantData.restaurant.name,
@@ -193,6 +195,90 @@ const RestaurantManagementScreen = ({ route, navigation }) => {
       restaurantId,
       menuPdf: restaurant?.menuPdf 
     });
+  };
+
+  const handlePickCertificate = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'application/pdf',
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const file = result.assets[0];
+        
+        Alert.prompt(
+          'Sertifika Adı',
+          'Sertifika için bir isim girin:',
+          [
+            { text: 'İptal', style: 'cancel' },
+            {
+              text: 'Ekle',
+              onPress: async (name) => {
+                if (!name || name.trim() === '') {
+                  Alert.alert('Hata', 'Lütfen bir isim girin');
+                  return;
+                }
+                await uploadCertificate(file, name.trim());
+              },
+            },
+          ],
+          'plain-text'
+        );
+      }
+    } catch (error) {
+      console.error('Error picking certificate:', error);
+      Alert.alert('Hata', 'Dosya seçilemedi');
+    }
+  };
+
+  const uploadCertificate = async (file, name) => {
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('certificate', {
+        uri: file.uri,
+        type: 'application/pdf',
+        name: file.name || 'certificate.pdf',
+      });
+
+      await restaurantService.uploadCertificate(restaurantId, formData);
+      Alert.alert('Başarılı', 'Sertifika eklendi');
+      await loadRestaurantData();
+    } catch (error) {
+      console.error('Error uploading certificate:', error);
+      Alert.alert('Hata', 'Sertifika yüklenemedi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCertificate = async (certificateId) => {
+    Alert.alert(
+      'Sertifikayı Sil',
+      'Bu sertifikayı silmek istediğinize emin misiniz?',
+      [
+        { text: 'İptal', style: 'cancel' },
+        {
+          text: 'Sil',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await restaurantService.deleteCertificate(restaurantId, certificateId);
+              Alert.alert('Başarılı', 'Sertifika silindi');
+              await loadRestaurantData();
+            } catch (error) {
+              console.error('Error deleting certificate:', error);
+              Alert.alert('Hata', 'Sertifika silinemedi');
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   if (loading) {
@@ -364,6 +450,33 @@ const RestaurantManagementScreen = ({ route, navigation }) => {
                   )}
                 </View>
                 <TouchableOpacity onPress={() => handleDeleteProduct(product.id)}>
+                  <Ionicons name="trash" size={24} color={COLORS.danger} />
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
+        </View>
+
+        <View style={styles.productsSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Sertifikalar</Text>
+            <TouchableOpacity onPress={handlePickCertificate}>
+              <Ionicons name="add-circle" size={32} color={COLORS.primary} />
+            </TouchableOpacity>
+          </View>
+
+          {certificates.length === 0 ? (
+            <Text style={styles.emptyText}>Henüz sertifika eklenmemiş</Text>
+          ) : (
+            certificates.map((cert) => (
+              <View key={cert.id} style={styles.productCard}>
+                <View style={styles.productInfo}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="document-text" size={20} color={COLORS.primary} style={{ marginRight: 8 }} />
+                    <Text style={styles.productName}>{cert.name}</Text>
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => handleDeleteCertificate(cert.id)}>
                   <Ionicons name="trash" size={24} color={COLORS.danger} />
                 </TouchableOpacity>
               </View>

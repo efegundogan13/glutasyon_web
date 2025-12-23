@@ -1,7 +1,7 @@
 // API Configuration
 // For development, use local URL
 // For production, this should be replaced with your production backend URL
-const isDevelopment = false; // Temporarily use production backend for testing
+const isDevelopment = false; // Use production backend
 
 export const API_BASE_URL = isDevelopment 
   ? 'http://192.168.1.101:3001/api' 

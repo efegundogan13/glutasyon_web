@@ -2,7 +2,7 @@
   "expo": {
     "name": "Glutasyon",
     "slug": "glutasyon-mobile",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon-1024.png",
     "userInterfaceStyle": "light",
@@ -17,11 +17,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.glutasyon.mobile",
-      "buildNumber": "1",
+      "buildNumber": "7",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Glutasyon, yakınınızdaki glütensiz restoranları göstermek için konumunuzu kullanır.",
         "NSCameraUsageDescription": "Tarif ve restoran fotoğrafları eklemek için kameraya erişim gereklidir.",
-        "NSPhotoLibraryUsageDescription": "Galerinizden fotoğraf seçmek için erişim gereklidir."
+        "NSPhotoLibraryUsageDescription": "Galerinizden fotoğraf seçmek için erişim gereklidir.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "config": {
         "googleMapsApiKey": "YOUR_IOS_API_KEY"
@@ -35,12 +36,13 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "READ_MEDIA_IMAGES"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.RECORD_AUDIO"
       ],
       "config": {
         "googleMaps": {
@@ -67,17 +69,19 @@
       ],
       "expo-mail-composer"
     ],
-    "extra": {
-      "eas": {
-        "projectId": "YOUR_EAS_PROJECT_ID"
-      }
-    },
-    "owner": "your-expo-username",
+    "owner": "efegundogan",
     "privacy": "public",
     "description": "Glütensiz yaşam için kapsamlı platform. Glütensiz restoranları keşfedin, tarifleri paylaşın, kampanyaları takip edin.",
     "primaryColor": "#4CAF50",
     "updates": {
       "fallbackToCacheTimeout": 0
+    },
+    "privacyPolicyUrl": "https://efegundogan13.github.io/glutasyon_web/docs/privacy-policy.html",
+    "termsOfServiceUrl": "https://efegundogan13.github.io/glutasyon_web/docs/terms-of-service.html",
+    "extra": {
+      "eas": {
+        "projectId": "ebe00495-193d-434e-816a-b26f356c3f3e"
+      }
     }
   }
 }

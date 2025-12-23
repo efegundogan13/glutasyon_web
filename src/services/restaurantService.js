@@ -75,6 +75,20 @@ export const restaurantService = {
     });
     return response.data;
   },
+
+  uploadCertificate: async (restaurantId, formData) => {
+    const response = await api.post(`/restaurants/${restaurantId}/certificates`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  deleteCertificate: async (restaurantId, certificateId) => {
+    const response = await api.delete(`/restaurants/${restaurantId}/certificates/${certificateId}`);
+    return response.data;
+  },
 };
 
 export default restaurantService;

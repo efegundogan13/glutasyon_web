@@ -44,6 +44,8 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
   const [showMenuModal, setShowMenuModal] = useState(false);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   useEffect(() => {
     loadRestaurantData();
@@ -63,6 +65,9 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
       setReviews(reviewsData.reviews || []);
       setEvents(eventsData.events || []);
       setProducts(productsData.products || []);
+      
+      console.log('🔍 Restaurant Data:', JSON.stringify(restaurantData.restaurant, null, 2));
+      console.log('📜 Certificates:', restaurantData.restaurant.certificates);
       
       const isFav = favoritesData.favorites?.some((f) => f.restaurantId === restaurantId);
       setIsFavorite(isFav);
@@ -266,6 +271,29 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
             </View>
           )}
 
+          {/* Certificates */}
+          {restaurant.certificates && restaurant.certificates.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Sertifikalar</Text>
+              {restaurant.certificates.map((cert, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.certificateItem}
+                  onPress={() => {
+                    setSelectedCertificate(cert.url);
+                    setShowCertificateModal(true);
+                  }}
+                >
+                  <View style={styles.certificateInfo}>
+                    <Ionicons name="document-text" size={24} color={COLORS.primary} />
+                    <Text style={styles.certificateName}>{cert.name}</Text>
+                  </View>
+                  <Ionicons name="eye" size={20} color={COLORS.primary} />
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
           {/* Events */}
           {events.length > 0 && (
             <View style={styles.section}>
@@ -410,6 +438,43 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
           </View>
         </Modal>
       )}
+
+      {/* Certificate Modal */}
+      {selectedCertificate && (
+        <Modal
+          visible={showCertificateModal}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => {
+            setShowCertificateModal(false);
+            setSelectedCertificate(null);
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Sertifika</Text>
+              <TouchableOpacity onPress={() => {
+                setShowCertificateModal(false);
+                setSelectedCertificate(null);
+              }}>
+                <Ionicons name="close" size={32} color={COLORS.white} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView 
+              style={styles.modalScrollView}
+              contentContainerStyle={styles.modalContent}
+              maximumZoomScale={3}
+              minimumZoomScale={1}
+            >
+              <Image
+                source={{ uri: selectedCertificate }}
+                style={styles.modalMenuImage}
+                resizeMode="contain"
+              />
+            </ScrollView>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -534,6 +599,29 @@ const styles = StyleSheet.create({
     fontSize: SIZES.md,
     color: COLORS.textLight,
     marginTop: SPACING.xs,
+  },
+  certificateItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.white,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  certificateInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  certificateName: {
+    fontSize: SIZES.md,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginLeft: SPACING.sm,
+    flex: 1,
   },
   eventItem: {
     backgroundColor: COLORS.white,

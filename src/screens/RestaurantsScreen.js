@@ -6,6 +6,7 @@ import {
   FlatList,
   RefreshControl,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -79,14 +80,38 @@ const RestaurantsScreen = ({ navigation }) => {
     if (!userLocation) return restaurants;
 
     return restaurants.map((restaurant) => {
-      const distance = calculateDistance(
-        userLocation.latitude,
-        userLocation.longitude,
-        restaurant.latitude,
-        restaurant.longitude
-      );
-      return { ...restaurant, distance };
+      // Check if restaurant has valid coordinates
+      if (restaurant.latitude && restaurant.longitude) {
+        const distance = calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          restaurant.latitude,
+          restaurant.longitude
+        );
+        return { ...restaurant, distance };
+      }
+      return restaurant;
     });
+  };
+
+  const handleMapPress = () => {
+    try {
+      const restaurantsWithDistance = getRestaurantsWithDistance();
+      // Filter only restaurants with valid coordinates
+      const validRestaurants = restaurantsWithDistance.filter(
+        r => r.latitude && r.longitude
+      );
+      
+      if (validRestaurants.length === 0) {
+        Alert.alert('Uyarı', 'Haritada gösterilecek restoran bulunamadı');
+        return;
+      }
+      
+      navigation.navigate('RestaurantMap', { restaurants: validRestaurants });
+    } catch (error) {
+      console.error('Map navigation error:', error);
+      Alert.alert('Hata', 'Harita açılırken bir sorun oluştu');
+    }
   };
 
   const renderRestaurant = ({ item }) => (
@@ -107,7 +132,7 @@ const RestaurantsScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Restoranlar</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('RestaurantMap', { restaurants: getRestaurantsWithDistance() })}
+          onPress={handleMapPress}
         >
           <Ionicons name="map-outline" size={28} color={COLORS.primary} />
         </TouchableOpacity>

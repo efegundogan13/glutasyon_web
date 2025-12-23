@@ -24,13 +24,10 @@
     },
     "production": {
       "env": {
-        "API_BASE_URL": "https://your-production-backend-url.com/api"
+        "API_BASE_URL": "https://glutasyon-backend-production.up.railway.app/api"
       },
       "android": {
         "buildType": "app-bundle"
-      },
-      "ios": {
-        "bundler": "metro"
       }
     }
   },

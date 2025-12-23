@@ -31,6 +31,7 @@ const RestaurantApplicationScreen = ({ navigation }) => {
   });
   const [logo, setLogo] = useState(null);
   const [menuPdf, setMenuPdf] = useState(null);
+  const [certificates, setCertificates] = useState([]);
   const [products, setProducts] = useState([{ name: '', description: '' }]);
   const [loading, setLoading] = useState(false);
   const [loadingCoordinates, setLoadingCoordinates] = useState(false);
@@ -90,6 +91,50 @@ const RestaurantApplicationScreen = ({ navigation }) => {
       console.error('Menu PDF seçme hatası:', error);
       Alert.alert('Hata', 'Dosya seçilirken bir hata oluştu');
     }
+  };
+
+  const handlePickCertificate = async () => {
+    if (certificates.length >= 5) {
+      Alert.alert('Limit', 'Maksimum 5 sertifika yükleyebilirsiniz');
+      return;
+    }
+
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'application/pdf',
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const file = result.assets[0];
+        Alert.prompt(
+          'Sertifika Adı',
+          'Sertifika için bir isim girin (örn: Glütensiz Sertifika)',
+          [
+            { text: 'İptal', style: 'cancel' },
+            {
+              text: 'Ekle',
+              onPress: (name) => {
+                if (name && name.trim()) {
+                  setCertificates([...certificates, { file, name: name.trim() }]);
+                } else {
+                  Alert.alert('Hata', 'Lütfen bir isim girin');
+                }
+              },
+            },
+          ],
+          'plain-text'
+        );
+      }
+    } catch (error) {
+      console.error('Sertifika seçme hatası:', error);
+      Alert.alert('Hata', 'Dosya seçilirken bir hata oluştu');
+    }
+  };
+
+  const removeCertificate = (index) => {
+    const newCertificates = certificates.filter((_, i) => i !== index);
+    setCertificates(newCertificates);
   };
 
   const handleGetLocation = async () => {
@@ -422,6 +467,39 @@ const RestaurantApplicationScreen = ({ navigation }) => {
             {errors.products && <Text style={styles.errorText}>{errors.products}</Text>}
           </View>
 
+          {/* Sertifikalar Bölümü */}
+          <View style={styles.certificatesSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.label}>Sertifikalar (İsteğe Bağlı)</Text>
+              <Text style={styles.helperText}>Maksimum 5 PDF sertifika ekleyebilirsiniz</Text>
+            </View>
+
+            {certificates.map((cert, index) => (
+              <View key={index} style={styles.certificateItem}>
+                <View style={styles.certificateInfo}>
+                  <Ionicons name="document-text" size={24} color={COLORS.primary} />
+                  <View style={styles.certificateText}>
+                    <Text style={styles.certificateName}>{cert.name}</Text>
+                    <Text style={styles.certificateFile}>{cert.file.name}</Text>
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => removeCertificate(index)}>
+                  <Ionicons name="trash" size={24} color={COLORS.danger} />
+                </TouchableOpacity>
+              </View>
+            ))}
+
+            {certificates.length < 5 && (
+              <TouchableOpacity
+                style={styles.uploadCertificateButton}
+                onPress={handlePickCertificate}
+              >
+                <Ionicons name="add-circle-outline" size={24} color={COLORS.primary} />
+                <Text style={styles.uploadCertificateText}>Sertifika Ekle</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
           <Button
             title="Başvuruyu Gönder"
             onPress={handleSubmit}
@@ -668,6 +746,62 @@ const styles = StyleSheet.create({
   changeText: {
     fontSize: SIZES.sm,
     color: COLORS.primary,
+  },
+  certificatesSection: {
+    marginBottom: SPACING.lg,
+  },
+  sectionHeader: {
+    marginBottom: SPACING.md,
+  },
+  helperText: {
+    fontSize: SIZES.sm,
+    color: COLORS.textLight,
+    marginTop: SPACING.xs,
+  },
+  certificateItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.lightGray,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.sm,
+  },
+  certificateInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  certificateText: {
+    marginLeft: SPACING.md,
+    flex: 1,
+  },
+  certificateName: {
+    fontSize: SIZES.md,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  certificateFile: {
+    fontSize: SIZES.sm,
+    color: COLORS.textLight,
+    marginTop: SPACING.xs,
+  },
+  uploadCertificateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderStyle: 'dashed',
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+    marginTop: SPACING.sm,
+  },
+  uploadCertificateText: {
+    marginLeft: SPACING.sm,
+    fontSize: SIZES.md,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
   submitButton: {
     marginTop: SPACING.md,
