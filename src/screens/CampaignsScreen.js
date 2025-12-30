@@ -11,14 +11,43 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../context/AuthContext';
+import Button from '../components/Button';
 import { campaignService } from '../services/campaignService';
 import { getImageUrl } from '../config/api';
 import { COLORS, SIZES, SPACING } from '../config/theme';
 
 const CampaignsScreen = ({ navigation }) => {
+  const { isAuthenticated } = useAuth();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Giriş yapmamışsa login ekranına yönlendir
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loginPrompt}>
+          <Ionicons name="pricetag-outline" size={80} color={COLORS.primary} />
+          <Text style={styles.loginPromptTitle}>Kampanyaları Görüntüle</Text>
+          <Text style={styles.loginPromptText}>
+            Kampanyaları görmek için giriş yapmanız gerekmektedir.
+          </Text>
+          <Button
+            title="Giriş Yap"
+            onPress={() => navigation.navigate('Login')}
+            style={styles.loginButton}
+          />
+          <Button
+            title="Kayıt Ol"
+            onPress={() => navigation.navigate('Register')}
+            variant="outline"
+            style={styles.registerButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   useEffect(() => {
     loadCampaigns();
@@ -253,6 +282,32 @@ const styles = StyleSheet.create({
     fontSize: SIZES.md,
     color: COLORS.textLight,
     marginTop: SPACING.md,
+  },
+  loginPrompt: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.xxl,
+  },
+  loginPromptTitle: {
+    fontSize: SIZES.xxl,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  loginPromptText: {
+    fontSize: SIZES.md,
+    color: COLORS.textLight,
+    textAlign: 'center',
+    marginBottom: SPACING.xl,
+  },
+  loginButton: {
+    width: '100%',
+    marginBottom: SPACING.md,
+  },
+  registerButton: {
+    width: '100%',
   },
 });
 

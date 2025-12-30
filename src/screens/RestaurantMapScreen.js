@@ -1,14 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SIZES } from '../config/theme';
+import { useAuth } from '../context/AuthContext';
+import Button from '../components/Button';
+import { COLORS, SIZES, SPACING } from '../config/theme';
 import { getCurrentLocation } from '../utils/location';
 
 const RestaurantMapScreen = ({ route, navigation }) => {
+  const { isAuthenticated } = useAuth();
   const { restaurants } = route.params;
   const [userLocation, setUserLocation] = useState(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+
+  // Giriş yapmamışsa login ekranına yönlendir
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loginPrompt}>
+          <Ionicons name="map-outline" size={80} color={COLORS.primary} />
+          <Text style={styles.loginPromptTitle}>Haritayı Görüntüle</Text>
+          <Text style={styles.loginPromptText}>
+            Haritayı görmek için giriş yapmanız gerekmektedir.
+          </Text>
+          <Button
+            title="Giriş Yap"
+            onPress={() => navigation.navigate('Login')}
+            style={styles.loginButton}
+          />
+          <Button
+            title="Kayıt Ol"
+            onPress={() => navigation.navigate('Register')}
+            variant="outline"
+            style={styles.registerButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   useEffect(() => {
     getUserLocation();
@@ -134,6 +164,32 @@ const styles = StyleSheet.create({
   location: {
     fontSize: SIZES.md,
     color: COLORS.textLight,
+  },
+  loginPrompt: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.xxl,
+  },
+  loginPromptTitle: {
+    fontSize: SIZES.xxl,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  loginPromptText: {
+    fontSize: SIZES.md,
+    color: COLORS.textLight,
+    textAlign: 'center',
+    marginBottom: SPACING.xl,
+  },
+  loginButton: {
+    width: '100%',
+    marginBottom: SPACING.md,
+  },
+  registerButton: {
+    width: '100%',
   },
 });
 
