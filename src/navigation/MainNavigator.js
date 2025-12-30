@@ -5,6 +5,11 @@ import { COLORS } from '../config/theme';
 // Navigators
 import TabNavigator from './TabNavigator';
 
+// Auth Screens
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+
 // Screens
 import RestaurantDetailScreen from '../screens/RestaurantDetailScreen';
 import RestaurantApplicationScreen from '../screens/RestaurantApplicationScreen';
@@ -122,6 +127,21 @@ const MainNavigator = () => {
         name="EventDetail"
         component={EventDetailScreen}
         options={{ title: 'Etkinlik Detayı' }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ title: 'Giriş Yap' }}
+      />
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ title: 'Kayıt Ol' }}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={{ title: 'Şifremi Unuttum' }}
       />
     </Stack.Navigator>
   );

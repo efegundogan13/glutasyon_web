@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.glutasyon.mobile",
-      "buildNumber": "8",
+      "buildNumber": "9",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Glutasyon, yakınınızdaki glütensiz restoranları göstermek için konumunuzu kullanır.",
         "NSCameraUsageDescription": "Tarif ve restoran fotoğrafları eklemek için kameraya erişim gereklidir.",

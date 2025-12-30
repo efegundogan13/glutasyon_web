@@ -8,6 +8,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -23,13 +24,39 @@ import Button from '../components/Button';
 import { COLORS, SIZES, SPACING, BORDER_RADIUS } from '../config/theme';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user, logout, isAdmin, isRestaurantAdmin } = useAuth();
+  const { user, logout, isAdmin, isRestaurantAdmin, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('favorites'); // favorites, reviews, recipes
   const [favorites, setFavorites] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [myRecipes, setMyRecipes] = useState([]);
   const [myRestaurants, setMyRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Giriş yapmamışsa login ekranına yönlendir
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loginPrompt}>
+          <Ionicons name="person-circle-outline" size={80} color={COLORS.primary} />
+          <Text style={styles.loginPromptTitle}>Giriş Yapın</Text>
+          <Text style={styles.loginPromptText}>
+            Profil özelliklerini kullanmak için giriş yapmanız gerekmektedir.
+          </Text>
+          <Button
+            title="Giriş Yap"
+            onPress={() => navigation.navigate('Login')}
+            style={styles.loginButton}
+          />
+          <Button
+            title="Kayıt Ol"
+            onPress={() => navigation.navigate('Register')}
+            variant="outline"
+            style={styles.registerButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   useEffect(() => {
     loadData();
@@ -83,6 +110,48 @@ const ProfileScreen = ({ navigation }) => {
         onPress: logout,
       },
     ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Hesabı Sil',
+      'Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir.',
+      [
+        { text: 'İptal', style: 'cancel' },
+        {
+          text: 'Hesabı Sil',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Backend'e DELETE isteği gönder
+              const API_URL = 'https://glutasyon-backend-production.up.railway.app/api';
+              const token = await AsyncStorage.getItem('token');
+              
+              const response = await fetch(`${API_URL}/auth/me`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                },
+              });
+
+              if (response.ok) {
+                Alert.alert('Başarılı', 'Hesabınız silindi', [
+                  {
+                    text: 'Tamam',
+                    onPress: logout,
+                  },
+                ]);
+              } else {
+                throw new Error('Hesap silinemedi');
+              }
+            } catch (error) {
+              console.error('Error deleting account:', error);
+              Alert.alert('Hata', 'Hesap silinirken bir hata oluştu');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleSupportPress = () => {
@@ -296,6 +365,20 @@ const ProfileScreen = ({ navigation }) => {
           </View>
         </View>
         <Ionicons name="chevron-forward" size={24} color={COLORS.textLight} />
+      </TouchableOpacity>
+
+      {/* Hesabı Sil */}
+      <TouchableOpacity style={styles.deleteAccountSection} onPress={handleDeleteAccount}>
+        <View style={styles.supportContent}>
+          <View style={[styles.supportIconContainer, styles.deleteIconContainer]}>
+            <Ionicons name="trash-outline" size={28} color={COLORS.danger} />
+          </View>
+          <View style={styles.supportText}>
+            <Text style={[styles.supportTitle, styles.deleteText]}>Hesabı Sil</Text>
+            <Text style={styles.deleteSubtext}>Hesabınızı kalıcı olarak silin</Text>
+          </View>
+        </View>
+        <Ionicons name="chevron-forward" size={24} color={COLORS.danger} />
       </TouchableOpacity>
 
       {isAdmin() && (
@@ -522,6 +605,25 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: '500',
   },
+  deleteAccountSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: SPACING.md,
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  deleteIconContainer: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+  },
+  deleteText: {
+    color: COLORS.danger,
+  },
+  deleteSubtext: {
+    fontSize: SIZES.sm,
+    color: COLORS.textLight,
+  },
   adminSection: {
     padding: SPACING.md,
     backgroundColor: COLORS.white,
@@ -632,6 +734,32 @@ const styles = StyleSheet.create({
   },
   addButton: {
     marginTop: SPACING.lg,
+  },
+  loginPrompt: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.xxl,
+  },
+  loginPromptTitle: {
+    fontSize: SIZES.xxl,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  loginPromptText: {
+    fontSize: SIZES.md,
+    color: COLORS.textLight,
+    textAlign: 'center',
+    marginBottom: SPACING.xl,
+  },
+  loginButton: {
+    width: '100%',
+    marginBottom: SPACING.md,
+  },
+  registerButton: {
+    width: '100%',
   },
 });
 

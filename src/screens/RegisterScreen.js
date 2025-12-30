@@ -13,14 +13,13 @@ import { useAuth } from '../context/AuthContext';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { COLORS, SIZES, SPACING } from '../config/theme';
-import { validateEmail, validatePassword, validatePhone } from '../utils/validation';
+import { validateEmail, validatePassword } from '../utils/validation';
 
 const RegisterScreen = ({ navigation }) => {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -48,12 +47,6 @@ const RegisterScreen = ({ navigation }) => {
       newErrors.email = 'Geçerli bir e-posta adresi girin';
     }
 
-    if (!formData.phone) {
-      newErrors.phone = 'Telefon numarası gerekli';
-    } else if (!validatePhone(formData.phone)) {
-      newErrors.phone = 'Geçerli bir telefon numarası girin';
-    }
-
     if (!formData.password) {
       newErrors.password = 'Şifre gerekli';
     } else if (!validatePassword(formData.password)) {
@@ -75,7 +68,6 @@ const RegisterScreen = ({ navigation }) => {
     const result = await register({
       name: formData.name,
       email: formData.email,
-      phone: formData.phone,
       password: formData.password,
     });
     setLoading(false);
@@ -127,15 +119,6 @@ const RegisterScreen = ({ navigation }) => {
               placeholder="ornek@email.com"
               keyboardType="email-address"
               error={errors.email}
-            />
-
-            <Input
-              label="Telefon"
-              value={formData.phone}
-              onChangeText={(value) => updateFormData('phone', value)}
-              placeholder="5XX XXX XX XX"
-              keyboardType="phone-pad"
-              error={errors.phone}
             />
 
             <Input
