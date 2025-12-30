@@ -32,41 +32,17 @@ const ProfileScreen = ({ navigation }) => {
   const [myRestaurants, setMyRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Giriş yapmamışsa login ekranına yönlendir
-  if (!isAuthenticated) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loginPrompt}>
-          <Ionicons name="person-circle-outline" size={80} color={COLORS.primary} />
-          <Text style={styles.loginPromptTitle}>Giriş Yapın</Text>
-          <Text style={styles.loginPromptText}>
-            Profil özelliklerini kullanmak için giriş yapmanız gerekmektedir.
-          </Text>
-          <Button
-            title="Giriş Yap"
-            onPress={() => navigation.navigate('Login')}
-            style={styles.loginButton}
-          />
-          <Button
-            title="Kayıt Ol"
-            onPress={() => navigation.navigate('Register')}
-            variant="outline"
-            style={styles.registerButton}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadData();
+    }
+  }, [activeTab, isAuthenticated]);
 
   useEffect(() => {
-    loadData();
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (isRestaurantAdmin()) {
+    if (isAuthenticated && isRestaurantAdmin()) {
       loadMyRestaurants();
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const loadMyRestaurants = async () => {
     try {
@@ -323,6 +299,32 @@ const ProfileScreen = ({ navigation }) => {
       ));
     }
   };
+
+  // Giriş yapmamışsa login ekranını göster
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loginPrompt}>
+          <Ionicons name="person-circle-outline" size={80} color={COLORS.primary} />
+          <Text style={styles.loginPromptTitle}>Giriş Yapın</Text>
+          <Text style={styles.loginPromptText}>
+            Profil özelliklerini kullanmak için giriş yapmanız gerekmektedir.
+          </Text>
+          <Button
+            title="Giriş Yap"
+            onPress={() => navigation.navigate('Login')}
+            style={styles.loginButton}
+          />
+          <Button
+            title="Kayıt Ol"
+            onPress={() => navigation.navigate('Register')}
+            variant="outline"
+            style={styles.registerButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
