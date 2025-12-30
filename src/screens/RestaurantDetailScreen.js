@@ -32,7 +32,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const RestaurantDetailScreen = ({ route, navigation }) => {
   const { restaurantId } = route.params;
-  const { user, isRestaurantAdmin } = useAuth();
+  const { user, isRestaurantAdmin, isAuthenticated } = useAuth();
   const [restaurant, setRestaurant] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [events, setEvents] = useState([]);
@@ -49,17 +49,14 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     loadRestaurantData();
-  }, [restaurantId]);
+  }, [restaurantId, isAuthenticated]);
 
   const loadRestaurantData = async () => {
     try {
-      const [restaurantData, reviewsData, eventsData, productsData, favoritesData] = await Promise.all([
-        restaurantService.getRestaurant(restaurantId),
-        reviewService.getReviews(restaurantId),
-        eventService.getEvents(restaurantId),
-        productService.getProducts(restaurantId),
-        favoriteService.getFavorites(),
-      ]);
+      const restaurantData = await restaurantService.getRestaurant(restaurantId);
+      const reviewsData = await reviewService.getReviews(restaurantId);
+      const eventsData = await eventService.getEvents(restaurantId);
+      const productsData = await productService.getProducts(restaurantId);
 
       setRestaurant(restaurantData.restaurant);
       setReviews(reviewsData.reviews || []);
@@ -69,8 +66,14 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
       console.log('🔍 Restaurant Data:', JSON.stringify(restaurantData.restaurant, null, 2));
       console.log('📜 Certificates:', restaurantData.restaurant.certificates);
       
-      const isFav = favoritesData.favorites?.some((f) => f.restaurantId === restaurantId);
-      setIsFavorite(isFav);
+      // Sadece giriş yapılmışsa favorileri kontrol et
+      if (isAuthenticated) {
+        const favoritesData = await favoriteService.getFavorites();
+        const isFav = favoritesData.favorites?.some((f) => f.restaurantId === restaurantId);
+        setIsFavorite(isFav);
+      } else {
+        setIsFavorite(false);
+      }
     } catch (error) {
       console.error('Error loading restaurant:', error);
       Alert.alert('Hata', 'Restoran bilgileri yüklenemedi');
@@ -80,6 +83,19 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
   };
 
   const handleFavoriteToggle = async () => {
+    // Giriş yapılmamışsa login sayfasına yönlendir
+    if (!isAuthenticated) {
+      Alert.alert(
+        'Giriş Gerekli',
+        'Favorilere eklemek için giriş yapmanız gerekmektedir.',
+        [
+          { text: 'İptal', style: 'cancel' },
+          { text: 'Giriş Yap', onPress: () => navigation.navigate('Login') }
+        ]
+      );
+      return;
+    }
+
     try {
       if (isFavorite) {
         await favoriteService.removeFavorite(restaurantId);

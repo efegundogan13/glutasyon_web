@@ -14,6 +14,19 @@ const RestaurantMapScreen = ({ route, navigation }) => {
   const [userLocation, setUserLocation] = useState(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      getUserLocation();
+    }
+  }, [isAuthenticated]);
+
+  const getUserLocation = async () => {
+    const location = await getCurrentLocation();
+    if (location) {
+      setUserLocation(location);
+    }
+  };
+
   // Giriş yapmamışsa login ekranına yönlendir
   if (!isAuthenticated) {
     return (
@@ -39,17 +52,6 @@ const RestaurantMapScreen = ({ route, navigation }) => {
       </SafeAreaView>
     );
   }
-
-  useEffect(() => {
-    getUserLocation();
-  }, []);
-
-  const getUserLocation = async () => {
-    const location = await getCurrentLocation();
-    if (location) {
-      setUserLocation(location);
-    }
-  };
 
   const initialRegion = userLocation
     ? {

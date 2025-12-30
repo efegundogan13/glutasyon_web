@@ -19,7 +19,7 @@ import { COLORS, SIZES, SPACING } from '../config/theme';
 import { getCurrentLocation, calculateDistance } from '../utils/location';
 
 const RestaurantsScreen = ({ navigation }) => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [restaurants, setRestaurants] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ const RestaurantsScreen = ({ navigation }) => {
   useEffect(() => {
     loadData();
     getUserLocation();
-  }, []);
+  }, [isAuthenticated]);
 
   const getUserLocation = async () => {
     const location = await getCurrentLocation();
@@ -40,13 +40,16 @@ const RestaurantsScreen = ({ navigation }) => {
 
   const loadData = async () => {
     try {
-      const [restaurantsData, favoritesData] = await Promise.all([
-        restaurantService.getRestaurants({ status: 'approved' }),
-        favoriteService.getFavorites(),
-      ]);
-
+      const restaurantsData = await restaurantService.getRestaurants({ status: 'approved' });
       setRestaurants(restaurantsData.restaurants || []);
-      setFavorites(favoritesData.favorites?.map((f) => f.restaurantId) || []);
+
+      // Sadece giriş yapılmışsa favorileri yükle
+      if (isAuthenticated) {
+        const favoritesData = await favoriteService.getFavorites();
+        setFavorites(favoritesData.favorites?.map((f) => f.restaurantId) || []);
+      } else {
+        setFavorites([]);
+      }
     } catch (error) {
       console.error('Error loading restaurants:', error);
     } finally {
@@ -61,6 +64,19 @@ const RestaurantsScreen = ({ navigation }) => {
   }, []);
 
   const handleFavoritePress = async (restaurantId) => {
+    // Giriş yapılmamışsa login sayfasına yönlendir
+    if (!isAuthenticated) {
+      Alert.alert(
+        'Giriş Gerekli',
+        'Favorilere eklemek için giriş yapmanız gerekmektedir.',
+        [
+          { text: 'İptal', style: 'cancel' },
+          { text: 'Giriş Yap', onPress: () => navigation.navigate('Login') }
+        ]
+      );
+      return;
+    }
+
     try {
       const isFavorite = favorites.includes(restaurantId);
       

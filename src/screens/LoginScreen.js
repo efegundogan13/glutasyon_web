@@ -49,7 +49,10 @@ const LoginScreen = ({ navigation }) => {
     const result = await login(email, password);
     setLoading(false);
 
-    if (!result.success) {
+    if (result.success) {
+      // Başarılı giriş - ana sayfaya dön
+      navigation.navigate('Restaurants');
+    } else {
       // Email doğrulama gerekiyorsa
       if (result.needsVerification) {
         Alert.alert(

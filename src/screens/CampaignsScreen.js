@@ -23,6 +23,29 @@ const CampaignsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadCampaigns();
+    }
+  }, [isAuthenticated]);
+
+  const loadCampaigns = async () => {
+    try {
+      const data = await campaignService.getCampaigns();
+      setCampaigns(data);
+    } catch (error) {
+      console.error('Error loading campaigns:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadCampaigns();
+  };
+
   // Giriş yapmamışsa login ekranına yönlendir
   if (!isAuthenticated) {
     return (
@@ -48,27 +71,6 @@ const CampaignsScreen = ({ navigation }) => {
       </SafeAreaView>
     );
   }
-
-  useEffect(() => {
-    loadCampaigns();
-  }, []);
-
-  const loadCampaigns = async () => {
-    try {
-      const data = await campaignService.getCampaigns();
-      setCampaigns(data);
-    } catch (error) {
-      console.error('Error loading campaigns:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    loadCampaigns();
-  };
 
   const formatDate = (date) => {
     if (!date) return '';
