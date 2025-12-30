@@ -367,6 +367,37 @@ const ProfileScreen = ({ navigation }) => {
         <Ionicons name="chevron-forward" size={24} color={COLORS.textLight} />
       </TouchableOpacity>
 
+      {/* Glutasyon Hakkında */}
+      <TouchableOpacity 
+        style={styles.aboutSection} 
+        onPress={() => {
+          Alert.alert(
+            'Glutasyon Hakkında',
+            'Glutasyon, glütensiz beslenme ihtiyacı olan bireylerin güvenle yemek yiyebilecekleri restoranları bulmasını ve glütensiz tarifler keşfetmesini sağlayan bir platformdur.\n\n' +
+            '🔸 Sorumluluk Reddi\n\n' +
+            'Platformumuzda yer alan restoran bilgileri, menü içerikleri ve glütensiz seçenekler restoran sahipleri tarafından sağlanmaktadır. ' +
+            'Glutasyon, restoran menülerinin içerik doğruluğunu, çapraz bulaşma risklerini ve glütensiz beyanlarının kesinliğini garanti etmez.\n\n' +
+            'Çölyak hastalığı veya glüten hassasiyeti olan kullanıcılarımız, restoranlarda sipariş vermeden önce mutlaka personelle iletişime geçmeli, ' +
+            'malzeme içeriklerini teyit etmeli ve çapraz bulaşma riski hakkında bilgi almalıdır.\n\n' +
+            '🔸 Gizlilik ve Güvenlik\n\n' +
+            'Kullanıcı verileriniz güvenli sunucularda saklanır ve üçüncü taraflarla paylaşılmaz. Hesabınızı istediğiniz zaman silebilirsiniz.\n\n' +
+            '📱 Versiyon: 1.0.2',
+            [{ text: 'Tamam' }]
+          );
+        }}
+      >
+        <View style={styles.supportContent}>
+          <View style={styles.supportIconContainer}>
+            <Ionicons name="information-circle" size={28} color={COLORS.primary} />
+          </View>
+          <View style={styles.supportText}>
+            <Text style={styles.supportTitle}>Glutasyon Hakkında</Text>
+            <Text style={styles.supportEmail}>Uygulama bilgileri ve sorumluluk reddi</Text>
+          </View>
+        </View>
+        <Ionicons name="chevron-forward" size={24} color={COLORS.textLight} />
+      </TouchableOpacity>
+
       {/* Hesabı Sil */}
       <TouchableOpacity style={styles.deleteAccountSection} onPress={handleDeleteAccount}>
         <View style={styles.supportContent}>
@@ -604,6 +635,23 @@ const styles = StyleSheet.create({
     fontSize: SIZES.sm,
     color: COLORS.primary,
     fontWeight: '500',
+  },
+  aboutSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.white,
+    padding: SPACING.md,
+    marginHorizontal: SPACING.md,
+    marginVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.primary + '30',
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   deleteAccountSection: {
     flexDirection: 'row',
