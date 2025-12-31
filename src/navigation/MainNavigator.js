@@ -9,6 +9,8 @@ import TabNavigator from './TabNavigator';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import VerifyEmailScreen from '../screens/VerifyEmailScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 
 // Screens
 import RestaurantDetailScreen from '../screens/RestaurantDetailScreen';
@@ -142,6 +144,16 @@ const MainNavigator = () => {
         name="ForgotPassword"
         component={ForgotPasswordScreen}
         options={{ title: 'Şifremi Unuttum' }}
+      />
+      <Stack.Screen
+        name="VerifyEmail"
+        component={VerifyEmailScreen}
+        options={{ title: 'E-posta Doğrulama' }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPasswordScreen}
+        options={{ title: 'Şifre Sıfırlama' }}
       />
     </Stack.Navigator>
   );
