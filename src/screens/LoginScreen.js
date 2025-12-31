@@ -58,20 +58,41 @@ const LoginScreen = ({ navigation }) => {
     } else {
       // Email doğrulama gerekiyorsa
       if (result.needsVerification) {
-        Alert.alert(
-          'Email Doğrulama Gerekli',
-          'Lütfen e-posta adresinizi doğrulayın',
-          [
-            {
-              text: 'İptal',
-              style: 'cancel',
-            },
-            {
-              text: 'Doğrula',
-              onPress: () => navigation.navigate('VerifyEmail', { email }),
-            },
-          ]
-        );
+        // Yeni doğrulama kodu gönder
+        try {
+          const authService = (await import('../services/authService')).default;
+          await authService.resendVerification(email);
+          
+          Alert.alert(
+            'Email Doğrulama Gerekli',
+            'E-posta adresinize yeni bir doğrulama kodu gönderdik. Lütfen e-postanızı kontrol edin.',
+            [
+              {
+                text: 'İptal',
+                style: 'cancel',
+              },
+              {
+                text: 'Doğrula',
+                onPress: () => navigation.navigate('VerifyEmail', { email }),
+              },
+            ]
+          );
+        } catch (error) {
+          Alert.alert(
+            'Email Doğrulama Gerekli',
+            'Lütfen e-posta adresinizi doğrulayın',
+            [
+              {
+                text: 'İptal',
+                style: 'cancel',
+              },
+              {
+                text: 'Doğrula',
+                onPress: () => navigation.navigate('VerifyEmail', { email }),
+              },
+            ]
+          );
+        }
       } else {
         Alert.alert('Hata', result.error);
       }
