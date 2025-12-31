@@ -32,6 +32,7 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: '/auth/reset-password',
   GET_PROFILE: '/auth/profile',
   UPDATE_PROFILE: '/auth/profile',
+  DELETE_ACCOUNT: '/auth/me',
   
   // Restaurants
   GET_RESTAURANTS: '/restaurants',

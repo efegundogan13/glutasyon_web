@@ -51,7 +51,10 @@ const LoginScreen = ({ navigation }) => {
 
     if (result.success) {
       // Başarılı giriş - ana sayfaya dön
-      navigation.navigate('Restaurants');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }],
+      });
     } else {
       // Email doğrulama gerekiyorsa
       if (result.needsVerification) {

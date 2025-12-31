@@ -16,6 +16,7 @@ import { favoriteService } from '../services/favoriteService';
 import { restaurantService } from '../services/restaurantService';
 import { recipeService } from '../services/recipeService';
 import { reviewService } from '../services/reviewService';
+import { authService } from '../services/authService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import RestaurantCard from '../components/RestaurantCard';
 import RecipeCard from '../components/RecipeCard';
@@ -99,27 +100,13 @@ const ProfileScreen = ({ navigation }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Backend'e DELETE isteği gönder
-              const API_URL = 'https://glutasyon-backend-production.up.railway.app/api';
-              const token = await AsyncStorage.getItem('token');
-              
-              const response = await fetch(`${API_URL}/auth/me`, {
-                method: 'DELETE',
-                headers: {
-                  'Authorization': `Bearer ${token}`,
+              await authService.deleteAccount();
+              Alert.alert('Başarılı', 'Hesabınız silindi', [
+                {
+                  text: 'Tamam',
+                  onPress: logout,
                 },
-              });
-
-              if (response.ok) {
-                Alert.alert('Başarılı', 'Hesabınız silindi', [
-                  {
-                    text: 'Tamam',
-                    onPress: logout,
-                  },
-                ]);
-              } else {
-                throw new Error('Hesap silinemedi');
-              }
+              ]);
             } catch (error) {
               console.error('Error deleting account:', error);
               Alert.alert('Hata', 'Hesap silinirken bir hata oluştu');

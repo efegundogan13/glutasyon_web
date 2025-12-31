@@ -41,6 +41,11 @@ export const authService = {
     const response = await api.put(API_ENDPOINTS.UPDATE_PROFILE, userData);
     return response.data;
   },
+
+  deleteAccount: async () => {
+    const response = await api.delete(API_ENDPOINTS.DELETE_ACCOUNT);
+    return response.data;
+  },
 };
 
 export default authService;
