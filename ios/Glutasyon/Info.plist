@@ -32,7 +32,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>8</string>
+    <string>9</string>
     <key>GMSApiKey</key>
     <string>YOUR_IOS_API_KEY</string>
     <key>ITSAppUsesNonExemptEncryption</key>
