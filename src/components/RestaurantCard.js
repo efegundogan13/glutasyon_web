@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING, BORDER_RADIUS } from '../config/theme';
 import { getImageUrl } from '../config/api';
 
-const RestaurantCard = ({ restaurant, onPress, onFavoritePress, isFavorite }) => {
+const RestaurantCard = memo(({ restaurant, onPress, onFavoritePress, isFavorite }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardHeader}>
         <Image
           source={{ uri: getImageUrl(restaurant.logo) }}
           style={styles.logo}
-          resizeMode="cover"
+          resizeMode="contain"
         />
         <View style={styles.headerContent}>
           <View style={styles.titleRow}>
@@ -26,6 +26,12 @@ const RestaurantCard = ({ restaurant, onPress, onFavoritePress, isFavorite }) =>
               />
             </TouchableOpacity>
           </View>
+          {restaurant.distance && (
+            <View style={styles.distanceRow}>
+              <Ionicons name="navigate" size={14} color={COLORS.primary} />
+              <Text style={styles.distance}>{restaurant.distance} km</Text>
+            </View>
+          )}
         </View>
       </View>
       <View style={styles.content}>
@@ -56,14 +62,10 @@ const RestaurantCard = ({ restaurant, onPress, onFavoritePress, isFavorite }) =>
             </Text>
           </View>
         )}
-        
-        {restaurant.distance && (
-          <Text style={styles.distance}>{restaurant.distance} km uzaklıkta</Text>
-        )}
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -72,10 +74,10 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACING.md,
     marginVertical: SPACING.sm,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
     overflow: 'hidden',
   },
   cardHeader: {
@@ -141,11 +143,16 @@ const styles = StyleSheet.create({
     marginLeft: SPACING.xs,
     fontWeight: '500',
   },
+  distanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.xs,
+  },
   distance: {
     fontSize: SIZES.sm,
     color: COLORS.primary,
-    marginTop: SPACING.xs,
-    fontWeight: '500',
+    marginLeft: 4,
+    fontWeight: '600',
   },
 });
 

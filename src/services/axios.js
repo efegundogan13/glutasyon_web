@@ -32,11 +32,24 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      await AsyncStorage.removeItem('userToken');
-      await AsyncStorage.removeItem('userData');
-      // Navigate to login screen - this will be handled in the app
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      // Token expired or invalid - clear storage and retry without token
+      try {
+        await AsyncStorage.removeItem('userToken');
+        await AsyncStorage.removeItem('userData');
+        console.log('Token temizlendi - guest mode ile yeniden deneniyor');
+        
+        // Retry request without Authorization header
+        delete originalRequest.headers.Authorization;
+        return api(originalRequest);
+      } catch (e) {
+        console.error('Retry hatası:', e);
+        return Promise.reject(error);
+      }
     }
     return Promise.reject(error);
   }

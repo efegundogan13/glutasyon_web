@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING, BORDER_RADIUS } from '../config/theme';
 import { getImageUrl } from '../config/api';
 
-const RecipeCard = ({ recipe, onPress, onDelete, showActions }) => {
+const RecipeCard = memo(({ recipe, onPress, onDelete, showActions }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <Image
         source={{ uri: getImageUrl(recipe.image) }}
         style={styles.image}
+        resizeMode="cover"
       />
       <View style={styles.content}>
         <View style={styles.header}>
@@ -42,7 +43,7 @@ const RecipeCard = ({ recipe, onPress, onDelete, showActions }) => {
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -51,17 +52,16 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACING.md,
     marginVertical: SPACING.sm,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
     overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: 150,
     backgroundColor: COLORS.lightGray,
-    resizeMode: 'contain',
   },
   content: {
     padding: SPACING.md,

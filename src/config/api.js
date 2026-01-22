@@ -76,4 +76,7 @@ export const API_ENDPOINTS = {
   CREATE_PRODUCT: '/products',
   UPDATE_PRODUCT: '/products/:id',
   DELETE_PRODUCT: '/products/:id',
+  
+  // App Version
+  CHECK_VERSION: '/app/version',
 };

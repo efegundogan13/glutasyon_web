@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,6 +26,7 @@ const RestaurantsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -95,7 +97,7 @@ const RestaurantsScreen = ({ navigation }) => {
   const getRestaurantsWithDistance = () => {
     if (!userLocation) return restaurants;
 
-    return restaurants.map((restaurant) => {
+    const restaurantsWithDistance = restaurants.map((restaurant) => {
       // Check if restaurant has valid coordinates
       if (restaurant.latitude && restaurant.longitude) {
         const distance = calculateDistance(
@@ -106,9 +108,31 @@ const RestaurantsScreen = ({ navigation }) => {
         );
         return { ...restaurant, distance };
       }
-      return restaurant;
+      return { ...restaurant, distance: Infinity }; // Koordinatı olmayanları en sona at
+    });
+
+    // En yakından en uzağa sırala
+    return restaurantsWithDistance.sort((a, b) => {
+      if (a.distance === Infinity && b.distance === Infinity) return 0;
+      if (a.distance === Infinity) return 1;
+      if (b.distance === Infinity) return -1;
+      return a.distance - b.distance;
     });
   };
+
+  // Arama filtreleme - useMemo ile performans optimizasyonu
+  const filteredRestaurants = useMemo(() => {
+    const restaurantsWithDistance = getRestaurantsWithDistance();
+    
+    if (!searchQuery.trim()) {
+      return restaurantsWithDistance;
+    }
+
+    return restaurantsWithDistance.filter((restaurant) =>
+      restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      restaurant.location.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [restaurants, userLocation, searchQuery]);
 
   const handleMapPress = () => {
     try {
@@ -130,14 +154,14 @@ const RestaurantsScreen = ({ navigation }) => {
     }
   };
 
-  const renderRestaurant = ({ item }) => (
+  const renderRestaurant = useCallback(({ item }) => (
     <RestaurantCard
       restaurant={item}
       onPress={() => navigation.navigate('RestaurantDetail', { restaurantId: item.id })}
       onFavoritePress={() => handleFavoritePress(item.id)}
       isFavorite={favorites.includes(item.id)}
     />
-  );
+  ), [favorites, navigation]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -154,8 +178,24 @@ const RestaurantsScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color={COLORS.gray} style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Restoran veya konum ara..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor={COLORS.gray}
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <Ionicons name="close-circle" size={20} color={COLORS.gray} />
+          </TouchableOpacity>
+        )}
+      </View>
+
       <FlatList
-        data={getRestaurantsWithDistance()}
+        data={filteredRestaurants}
         renderItem={renderRestaurant}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
@@ -165,9 +205,15 @@ const RestaurantsScreen = ({ navigation }) => {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="restaurant-outline" size={64} color={COLORS.gray} />
-            <Text style={styles.emptyText}>Henüz onaylanmış restoran yok</Text>
+            <Text style={styles.emptyText}>
+              {searchQuery ? 'Aramanıza uygun restoran bulunamadı' : 'Henüz onaylanmış restoran yok'}
+            </Text>
           </View>
         }
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={50}
+        windowSize={10}
       />
     </SafeAreaView>
   );
@@ -190,6 +236,26 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.title,
     fontWeight: 'bold',
+    color: COLORS.text,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    marginHorizontal: SPACING.md,
+    marginTop: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  searchIcon: {
+    marginRight: SPACING.sm,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: SPACING.sm,
+    fontSize: SIZES.md,
     color: COLORS.text,
   },
   list: {
