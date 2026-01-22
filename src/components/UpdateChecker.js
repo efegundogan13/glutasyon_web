@@ -7,7 +7,7 @@ import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 import { COLORS, SIZES, SPACING, BORDER_RADIUS } from '../config/theme';
 import Button from './Button';
 
-const CURRENT_VERSION = '1.0.0'; // package.json'dan alınan versiyon
+const CURRENT_VERSION = '0.9.0'; // TEST: Güncelleme göstermek için düşük versiyon
 const VERSION_CHECK_KEY = '@app_version_dismissed';
 const CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24 saat
 
@@ -36,19 +36,32 @@ const UpdateChecker = () => {
           params: { platform: Platform.OS }
         });
         
-        const { latestVersion, updateMessage, isForceUpdate } = response.data;
+        const { latestVersion, updateMessage, features, isForceUpdate } = response.data;
 
         if (compareVersions(latestVersion, CURRENT_VERSION) > 0) {
           setUpdateInfo({
             version: latestVersion,
             message: updateMessage || 'Yeni özellikler ve performans iyileştirmeleri eklendi!',
+            features: features || [],
             isForceUpdate: isForceUpdate || false,
           });
           setShowUpdateModal(true);
         }
       } catch (apiError) {
-        // Backend'den cevap gelmezse, sessizce devam et
-        console.log('Version API yanıt vermedi, kontrol atlandı');
+        // TEST: Backend'den cevap gelmezse, test versiyonu göster
+        console.log('Version API yanıt vermedi, test versiyonu gösteriliyor...');
+        setUpdateInfo({
+          version: '1.0.1',
+          message: 'Yeni özellikler ve iyileştirmeler mevcut!',
+          features: [
+            '🔍 Restoran arama özelliği eklendi',
+            '📍 Konum bazlı sıralama geliştirildi',
+            '⚡ Performans iyileştirmeleri',
+            '🐛 Hata düzeltmeleri'
+          ],
+          isForceUpdate: false,
+        });
+        setShowUpdateModal(true);
       }
 
       // Son kontrol zamanını kaydet
@@ -109,20 +122,16 @@ const UpdateChecker = () => {
           <Text style={styles.version}>Versiyon {updateInfo.version}</Text>
           <Text style={styles.message}>{updateInfo.message}</Text>
 
-          <View style={styles.features}>
-            <View style={styles.feature}>
-              <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
-              <Text style={styles.featureText}>Performans iyileştirmeleri</Text>
+          {updateInfo.features && updateInfo.features.length > 0 && (
+            <View style={styles.features}>
+              {updateInfo.features.map((feature, index) => (
+                <View key={index} style={styles.feature}>
+                  <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+                  <Text style={styles.featureText}>{feature}</Text>
+                </View>
+              ))}
             </View>
-            <View style={styles.feature}>
-              <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
-              <Text style={styles.featureText}>Hata düzeltmeleri</Text>
-            </View>
-            <View style={styles.feature}>
-              <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
-              <Text style={styles.featureText}>Yeni özellikler</Text>
-            </View>
-          </View>
+          )}
 
           <Button
             title="Şimdi Güncelle"
