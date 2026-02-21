@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glutasyon - Uygulamayı İndir</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .logo { width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 20px; }
+        h1 { color: #2E7D32; font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: #666; font-size: 16px; margin-bottom: 30px; }
+        .features { text-align: left; margin-bottom: 30px; }
+        .feature {
+            display: flex; align-items: center; padding: 8px 0;
+            color: #333; font-size: 15px;
+        }
+        .feature span { margin-right: 10px; font-size: 20px; }
+        .btn {
+            display: block; width: 100%; padding: 16px; border-radius: 12px;
+            text-decoration: none; font-size: 17px; font-weight: 600;
+            margin-bottom: 12px; transition: transform 0.2s;
+        }
+        .btn:hover { transform: scale(1.02); }
+        .btn-apple {
+            background: #000; color: white;
+        }
+        .btn-google {
+            background: #4CAF50; color: white;
+        }
+        .btn-icon { font-size: 20px; margin-right: 8px; vertical-align: middle; }
+        .footer { margin-top: 20px; color: #999; font-size: 13px; }
+    </style>
+    <script>
+        // Otomatik yönlendirme
+        (function() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            var isAndroid = /android/i.test(ua);
+            
+            // Store linkleri - yayınlandıktan sonra güncellenecek
+            var appStoreURL = 'https://apps.apple.com/app/glutasyon/id_BURAYA_ID';
+            var playStoreURL = 'https://play.google.com/store/apps/details?id=com.glutasyon.mobile';
+
+            // 2 saniye sonra otomatik yönlendir
+            setTimeout(function() {
+                if (isIOS) {
+                    window.location.href = appStoreURL;
+                } else if (isAndroid) {
+                    window.location.href = playStoreURL;
+                }
+            }, 2000);
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="https://efegundogan13.github.io/glutasyon_web/icon-512.png" alt="Glutasyon" class="logo" 
+             onerror="this.style.display='none'">
+        <h1>Glutasyon</h1>
+        <p class="subtitle">Glutensiz yaşam rehberiniz</p>
+        
+        <div class="features">
+            <div class="feature"><span>🍽️</span> Glutensiz restoranları keşfedin</div>
+            <div class="feature"><span>📖</span> Glutensiz tarifleri inceleyin</div>
+            <div class="feature"><span>🏪</span> Glutensiz ürünleri bulun</div>
+            <div class="feature"><span>📍</span> Yakınızdaki mekanları görün</div>
+            <div class="feature"><span>⭐</span> Değerlendirme yapın</div>
+        </div>
+
+        <a href="https://apps.apple.com/app/glutasyon/id_BURAYA_ID" class="btn btn-apple">
+            <span class="btn-icon">🍎</span> App Store'dan İndir
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.glutasyon.mobile" class="btn btn-google">
+            <span class="btn-icon">▶️</span> Google Play'den İndir
+        </a>
+
+        <p class="footer">© 2026 Glutasyon. Tüm hakları saklıdır.</p>
+    </div>
+</body>
+</html>
